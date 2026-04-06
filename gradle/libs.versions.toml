@@ -17,6 +17,7 @@ credentialsPlayServicesAuth = "1.5.0"
 googleid = "1.2.0"
 firebaseStorageKtx = "22.0.1"
 navigationCompose = "2.9.7"
+animationCoreLint = "1.10.6"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,6 +42,7 @@ androidx-credentials-play-services-auth = { group = "androidx.credentials", name
 googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
 firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-compose-animation-core-lint = { group = "androidx.compose.animation", name = "animation-core-lint", version.ref = "animationCoreLint" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

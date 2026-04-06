@@ -6,7 +6,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +21,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -49,8 +50,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lint.kotlin.metadata.Visibility
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.cloudinary.android.MediaManager
@@ -63,8 +66,12 @@ import com.example.myapplication.firebase.FirebaseConfig
 fun AddUserScreen(navController: NavController) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
     var role by remember { mutableStateOf("user") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    var showPassword by remember { mutableStateOf(false) }
+    var showConfirmPassword by remember { mutableStateOf(false) }
 
     var expanded by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
@@ -187,10 +194,58 @@ fun AddUserScreen(navController: NavController) {
                 leadingIcon = {
                     Icon(Icons.Default.Lock, contentDescription = null)
                 },
+                trailingIcon = {
+                    IconButton(onClick = { showPassword = !showPassword }) {
+                        Icon(
+                            imageVector = if (showPassword) {
+                                Icons.Default.Visibility
+                            } else {
+                                Icons.Default.VisibilityOff
+                            },
+                            contentDescription = if (showPassword) "Ẩn mật khẩu" else "Hiện mật khẩu"
+                        )
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium,
                 singleLine = true,
-                visualTransformation = PasswordVisualTransformation()
+                visualTransformation = if (showPassword) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = { Text("Xác nhận mật khẩu") },
+                leadingIcon = {
+                    Icon(Icons.Default.Lock, contentDescription = null)
+                },
+                trailingIcon = {
+                    IconButton(onClick = { showConfirmPassword = !showConfirmPassword }) {
+                        Icon(
+                            imageVector = if (showConfirmPassword) {
+                                Icons.Default.Visibility
+                            } else {
+                                Icons.Default.VisibilityOff
+                            },
+                            contentDescription = if (showConfirmPassword) "Ẩn mật khẩu" else "Hiện mật khẩu"
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium,
+                singleLine = true,
+                isError = confirmPassword.isNotEmpty() && password != confirmPassword,
+                visualTransformation = if (showConfirmPassword) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -237,8 +292,13 @@ fun AddUserScreen(navController: NavController) {
                 onClick = {
                     if (isLoading) return@Button
 
-                    if (username.isBlank() || password.isBlank()) {
+                    if (username.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
                         Toast.makeText(context, "Nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    if (password != confirmPassword) {
+                        Toast.makeText(context, "Mật khẩu xác nhận không khớp", Toast.LENGTH_SHORT).show()
                         return@Button
                     }
 

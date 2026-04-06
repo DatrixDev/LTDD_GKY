@@ -21,6 +21,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -50,6 +52,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
@@ -66,10 +69,14 @@ fun EditUserScreen(
 ) {
     var newUsername by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
     var role by remember { mutableStateOf("user") }
     var image by remember { mutableStateOf("") }
 
     var newImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    var showPassword by remember { mutableStateOf(false) }
+    var showConfirmPassword by remember { mutableStateOf(false) }
 
     var isLoading by remember { mutableStateOf(false) }
     var isFetching by remember { mutableStateOf(true) }
@@ -94,6 +101,7 @@ fun EditUserScreen(
                 if (doc != null) {
                     newUsername = doc.getString("username") ?: ""
                     password = doc.getString("password") ?: ""
+                    confirmPassword = doc.getString("password") ?: ""
                     role = doc.getString("role") ?: "user"
                     image = doc.getString("image") ?: ""
                 }
@@ -227,10 +235,58 @@ fun EditUserScreen(
                     leadingIcon = {
                         Icon(Icons.Default.Lock, contentDescription = null)
                     },
+                    trailingIcon = {
+                        IconButton(onClick = { showPassword = !showPassword }) {
+                            Icon(
+                                imageVector = if (showPassword) {
+                                    Icons.Default.Visibility
+                                } else {
+                                    Icons.Default.VisibilityOff
+                                },
+                                contentDescription = if (showPassword) "Ẩn mật khẩu" else "Hiện mật khẩu"
+                            )
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
                     singleLine = true,
-                    visualTransformation = PasswordVisualTransformation()
+                    visualTransformation = if (showPassword) {
+                        VisualTransformation.None
+                    } else {
+                        PasswordVisualTransformation()
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    label = { Text("Xác nhận mật khẩu") },
+                    leadingIcon = {
+                        Icon(Icons.Default.Lock, contentDescription = null)
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = { showConfirmPassword = !showConfirmPassword }) {
+                            Icon(
+                                imageVector = if (showConfirmPassword) {
+                                    Icons.Default.Visibility
+                                } else {
+                                    Icons.Default.VisibilityOff
+                                },
+                                contentDescription = if (showConfirmPassword) "Ẩn mật khẩu" else "Hiện mật khẩu"
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.medium,
+                    singleLine = true,
+                    isError = confirmPassword.isNotEmpty() && password != confirmPassword,
+                    visualTransformation = if (showConfirmPassword) {
+                        VisualTransformation.None
+                    } else {
+                        PasswordVisualTransformation()
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -275,8 +331,13 @@ fun EditUserScreen(
 
                 Button(
                     onClick = {
-                        if (newUsername.isBlank() || password.isBlank()) {
+                        if (newUsername.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
                             Toast.makeText(context, "Vui lòng không để trống", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+
+                        if (password != confirmPassword) {
+                            Toast.makeText(context, "Mật khẩu xác nhận không khớp", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
 
