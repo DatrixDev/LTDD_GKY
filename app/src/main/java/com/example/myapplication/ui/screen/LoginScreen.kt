@@ -38,6 +38,7 @@ import androidx.navigation.NavController
 import com.example.myapplication.R
 import com.example.myapplication.firebase.FirebaseConfig
 import com.example.myapplication.navigation.Screen
+import com.example.myapplication.utils.PasswordUtils
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -125,9 +126,10 @@ fun LoginScreen(navController: NavController) {
 
                 isLoading = true
 
+                val hashedPassword = PasswordUtils.hashPassword(password)
                 FirebaseConfig.firestore.collection("users")
                     .whereEqualTo("username", username)
-                    .whereEqualTo("password", password)
+                    .whereEqualTo("password", hashedPassword)
                     .get()
                     .addOnSuccessListener { result ->
                         isLoading = false

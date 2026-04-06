@@ -60,6 +60,7 @@ import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
 import com.example.myapplication.firebase.FirebaseConfig
+import com.example.myapplication.utils.PasswordUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,7 +89,7 @@ fun AddUserScreen(navController: NavController) {
     fun addUserToFirestore(imageUrl: String) {
         val user = hashMapOf(
             "username" to username,
-            "password" to password,
+            "password" to PasswordUtils.hashPassword(password),
             "role" to role,
             "image" to imageUrl
         )

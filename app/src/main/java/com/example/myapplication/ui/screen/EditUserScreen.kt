@@ -60,7 +60,7 @@ import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
 import com.example.myapplication.firebase.FirebaseConfig
-
+import com.example.myapplication.utils.PasswordUtils
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditUserScreen(
@@ -100,8 +100,8 @@ fun EditUserScreen(
                 val doc = result.documents.firstOrNull()
                 if (doc != null) {
                     newUsername = doc.getString("username") ?: ""
-                    password = doc.getString("password") ?: ""
-                    confirmPassword = doc.getString("password") ?: ""
+                    password = ""
+                    confirmPassword = ""
                     role = doc.getString("role") ?: "user"
                     image = doc.getString("image") ?: ""
                 }
@@ -122,7 +122,7 @@ fun EditUserScreen(
                     doc.reference.update(
                         mapOf(
                             "username" to newUsername,
-                            "password" to password,
+                            "password" to PasswordUtils.hashPassword(password),
                             "role" to role,
                             "image" to finalImageUrl
                         )
