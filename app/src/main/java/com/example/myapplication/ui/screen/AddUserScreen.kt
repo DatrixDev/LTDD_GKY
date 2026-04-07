@@ -302,7 +302,10 @@ fun AddUserScreen(navController: NavController) {
                         Toast.makeText(context, "Mật khẩu xác nhận không khớp", Toast.LENGTH_SHORT).show()
                         return@Button
                     }
-
+                    if (password.length < 6) {
+                        Toast.makeText(context, "Mật khẩu phải trên 6 ký tự", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
                     isLoading = true
 
                     if (imageUri != null) {

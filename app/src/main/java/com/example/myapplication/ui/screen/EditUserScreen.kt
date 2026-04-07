@@ -119,14 +119,17 @@ fun EditUserScreen(
             .get()
             .addOnSuccessListener { result ->
                 for (doc in result.documents) {
-                    doc.reference.update(
-                        mapOf(
-                            "username" to newUsername,
-                            "password" to PasswordUtils.hashPassword(password),
-                            "role" to role,
-                            "image" to finalImageUrl
-                        )
+                    val updates = mutableMapOf<String, Any>(
+                        "username" to newUsername,
+                        "role" to role,
+                        "image" to finalImageUrl
                     )
+
+                    if (password.isNotBlank()) {
+                        updates["password"] = PasswordUtils.hashPassword(password)
+                    }
+
+                    doc.reference.update(updates)
                 }
 
                 isLoading = false
@@ -331,14 +334,21 @@ fun EditUserScreen(
 
                 Button(
                     onClick = {
-                        if (newUsername.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
-                            Toast.makeText(context, "Vui lòng không để trống", Toast.LENGTH_SHORT).show()
+                        if (newUsername.isBlank()) {
+                            Toast.makeText(context, "Username không được để trống", Toast.LENGTH_SHORT).show()
                             return@Button
                         }
 
-                        if (password != confirmPassword) {
-                            Toast.makeText(context, "Mật khẩu xác nhận không khớp", Toast.LENGTH_SHORT).show()
-                            return@Button
+                        if (password.isNotBlank() || confirmPassword.isNotBlank()) {
+                            if (password != confirmPassword) {
+                                Toast.makeText(context, "Mật khẩu xác nhận không khớp", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+
+                            if (password.length < 6) {
+                                Toast.makeText(context, "Mật khẩu phải từ 6 ký tự", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
                         }
 
                         isLoading = true

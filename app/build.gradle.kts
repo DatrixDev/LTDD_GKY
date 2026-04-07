@@ -59,7 +59,12 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("com.cloudinary:cloudinary-android:3.1.2")
+
     implementation(libs.androidx.compose.animation.core.lint)
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
