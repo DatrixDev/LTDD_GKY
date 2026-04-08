@@ -142,7 +142,9 @@ fun LoginScreen(navController: NavController) {
                                     popUpTo(Screen.Login.route) { inclusive = true }
                                 }
                             } else {
-                                navController.navigate(Screen.NoPermission.route)
+                                navController.navigate(Screen.NoPermission.createRoute(username)) {
+                                    popUpTo(Screen.Login.route) { inclusive = true }
+                                }
                             }
                         } else {
                             Toast.makeText(

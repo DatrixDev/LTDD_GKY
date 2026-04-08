@@ -31,8 +31,17 @@ fun AppNavGraph() {
         composable(Screen.AddUser.route) {
             AddUserScreen(navController = navController)
         }
-        composable(Screen.NoPermission.route) {
-            NoPermissionScreen(navController = navController)
+        composable(
+            route = Screen.NoPermission.route,
+            arguments = listOf(
+                navArgument("username") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val username = backStackEntry.arguments?.getString("username") ?: ""
+            NoPermissionScreen(
+                navController = navController,
+                username = username
+            )
         }
         composable(
             route = Screen.EditUser.route,
